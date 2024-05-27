@@ -1,0 +1,13 @@
+grpc:
+  port: 50051
+
+cache:
+  ttl: 60 #seconds
+
+ctx:
+  ttl: 10s
+
+nats:
+  total_wait: 600s
+  reconnect_delay: 5s
+  timeout: 300s
