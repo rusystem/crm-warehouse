@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package warehouse;
+
+option go_package = "../gen/proto/warehouse";
+
+service WarehouseService {
+  rpc Create(Warehouse) returns(Id);
+  rpc GetById(Id) returns(Warehouse);
+}
+
+message Warehouse {
+  int64 id = 1; // Уникальный идентификатор склада
+  string name = 2; // Название склада
+  string address = 3; // Адрес склада
+  string responsible_person = 4; // Ответственное лицо за склад
+  string phone = 5; // Контактный телефон склада
+  string email = 6; // Электронная почта для связи
+  int64 max_capacity = 7; // Максимальная вместимость склада
+  int64 current_occupancy = 8; // Текущая заполняемость склада
+  string other_fields = 9; // Дополнительные пользовательские поля
+  string country = 10; // Страна склада
+}
+
+message Id {
+  int64 Id = 1;
+}

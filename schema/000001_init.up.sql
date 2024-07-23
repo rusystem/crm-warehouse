@@ -8,7 +8,7 @@ CREATE TABLE "warehouses"
     "email"              VARCHAR(255),
     "max_capacity"       INT,
     "current_occupancy"  INT,
-    "other_fields"       TEXT,
+    "other_fields"       JSONB,
     "country"            TEXT
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE "planning_materials"
     "storage_cost"             DECIMAL,
     "warehouse_section"        VARCHAR(255),
     "incoming_delivery_number" VARCHAR(255),
-    "other_fields"             TEXT
+    "other_fields"             JSONB
 );
 
 CREATE TABLE "purchased_materials"
@@ -73,7 +73,7 @@ CREATE TABLE "purchased_materials"
     "warehouse_section"        VARCHAR(255),
     "barcode"                  VARCHAR(255),
     "incoming_delivery_number" VARCHAR(255),
-    "other_fields"             TEXT
+    "other_fields"             JSONB
 );
 
 CREATE TABLE "planning_materials_archive"
@@ -105,7 +105,7 @@ CREATE TABLE "planning_materials_archive"
     "storage_cost"             DECIMAL,
     "warehouse_section"        VARCHAR(255),
     "incoming_delivery_number" VARCHAR(255),
-    "other_fields"             TEXT
+    "other_fields"             JSONB
 );
 
 CREATE TABLE "purchased_materials_archive"
@@ -164,7 +164,7 @@ CREATE TABLE "suppliers"
     "registration_date"  DATE,
     "payment_terms"      TEXT,
     "is_active"          BOOLEAN,
-    "other_fields"       TEXT
+    "other_fields"       JSONB
 );
 
 CREATE TABLE "users"

@@ -3,8 +3,8 @@ package telegram
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"pingocean-front/users-service/internal/config"
-	"pingocean-front/users-service/pkg/logger"
+	"github.com/rusystem/crm-warehouse/internal/config"
+	"github.com/rusystem/crm-warehouse/pkg/logger"
 	"strconv"
 )
 
@@ -63,6 +63,5 @@ func (t *Telegram) sender() {
 }
 
 func getFormattedMessage(message Message) string {
-	return fmt.Sprintf("Выявлено подозрительное действие (%s):\n🔸 TIME: %s\n🔸 PAYLOAD: %s\n🔸 USER-AGENT: %s\n🔸 IP: %s\n🔸 Company: %s\n🔸 Email: %s",
-		message.Header, message.Datetime, message.Payload, message.UserAgent, message.Ip, message.CompanyName, message.Email)
+	return "" //todo implement
 }

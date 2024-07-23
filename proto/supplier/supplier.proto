@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package supplier;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "../gen/proto/supplier";
+
+service SupplierService {
+  rpc Create(Supplier) returns(Id);
+  rpc GetById(Id) returns(Supplier);
+}
+
+message Supplier {
+  int64 id = 1; // Уникальный идентификатор поставщика
+  string name = 2; // Наименование поставщика
+  string legal_address = 3; // Юридический адрес поставщика
+  string actual_address = 4; // Фактический адрес поставщика
+  string warehouse_address = 5; // Адрес склада поставщика
+  string contact_person = 6; // Контактное лицо у поставщика
+  string phone = 7; // Телефон поставщика
+  string email = 8; // Электронная почта поставщика
+  string website = 9; // Сайт поставщика
+  string contract_number = 10; // Номер и дата договора с поставщиком
+  string product_categories = 11; // Категории товаров, поставляемых поставщиком
+  double purchase_amount = 12; // Общая сумма закупок у поставщика
+  double balance = 13; // Баланс по поставщику
+  int64 product_types = 14; // Количество типов товаров от поставщика
+  string comments = 15; // Комментарии
+  string files = 16; // Ссылки на файлы или документы
+  string country = 17; // Страна поставщика
+  string region = 18; // Регион или штат поставщика
+  string tax_id = 19; // Идентификационный номер налогоплательщика (ИНН)
+  string bank_details = 20; // Банковские реквизиты поставщика
+  google.protobuf.Timestamp registration_date = 21; // Дата регистрации поставщика
+  string payment_terms = 22; // Условия оплаты по контракту
+  bool is_active = 23; // Статус активности поставщика (активен/неактивен)
+  string other_fields = 24; // Дополнительные пользовательские поля
+}
+
+message Id {
+  int64 Id = 1;
+}

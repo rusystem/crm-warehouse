@@ -6,10 +6,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/rusystem/crm-warehouse/internal/config"
+	"github.com/rusystem/crm-warehouse/internal/repository"
+	grpcServer "github.com/rusystem/crm-warehouse/internal/server/grpc"
+	"github.com/rusystem/crm-warehouse/internal/service"
+	"github.com/rusystem/crm-warehouse/internal/transport"
 	"github.com/rusystem/crm-warehouse/pkg/database"
 	"github.com/rusystem/crm-warehouse/pkg/logger"
 	"github.com/rusystem/crm-warehouse/pkg/mq"
-	"github.com/rusystem/crm-warehouse/pkg/telegram"
 	"os"
 	"os/signal"
 	"syscall"
@@ -28,10 +31,10 @@ func main() {
 	}
 
 	// init telegram bot
-	tg, err := telegram.NewTelegram(cfg)
-	if err != nil {
-		logger.Fatal(fmt.Sprintf("failed to initialize telegram bot, err - %v", err))
-	}
+	//tg, err := telegram.NewTelegram(cfg)
+	//if err != nil {
+	//	logger.Fatal(fmt.Sprintf("failed to initialize telegram bot, err - %v", err))
+	//} //todo make telegram alert logic
 
 	// init memory cache
 	mc := memcache.New(fmt.Sprintf("%s:%d", cfg.Memcache.Host, cfg.Memcache.Port))
@@ -71,22 +74,20 @@ func main() {
 	}(cdb)
 
 	// init dep-s
-	tlRepo := tarantool_repo.New(cfg, tc)
-	chRepo := clickhouse_repo.New(cfg, cdb)
-	r := repository.New(chRepo, tlRepo)
-	s := service.New(r, cfg, memCache)
+	r := repository.New(cfg, mc, pc)
+	s := service.New(r, nc)
 	h := transport.New(s)
 
 	//init and start grpc server
-	grpcSrv := server.NewGrpcServer()
+	grpcSrv := grpcServer.New(h.Warehouse, h.Supplier)
 	go func() {
-		if err := grpcSrv.Run(cfg.ServerGrpc.Port); err != nil {
+		if err := grpcSrv.Run(cfg.Grpc.Port); err != nil {
 			logger.Fatal(fmt.Sprintf("failed to start grpc server, err: %v", err))
 		}
 	}()
 	defer grpcSrv.Stop()
 
-	logger.Info("clickhouse-service started")
+	logger.Info("crm-warehouse started")
 
 	// graceful shutdown
 	quit := make(chan os.Signal, 1)
