@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/rusystem/crm-warehouse/internal/service"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/supplier"
@@ -20,6 +21,11 @@ func NewSupplierHandler(service *service.Service) *SupplierHandler {
 
 func (sh *SupplierHandler) GetById(ctx context.Context, id *supplier.Id) (*supplier.Supplier, error) {
 	spl, err := sh.service.Supplier.GetById(ctx, id.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	otherFieldsJSON, err := json.Marshal(spl.OtherFields)
 	if err != nil {
 		return nil, err
 	}
@@ -48,11 +54,16 @@ func (sh *SupplierHandler) GetById(ctx context.Context, id *supplier.Id) (*suppl
 		RegistrationDate:  timestamppb.New(spl.RegistrationDate),
 		PaymentTerms:      spl.PaymentTerms,
 		IsActive:          spl.IsActive,
-		OtherFields:       spl.OtherFields,
+		OtherFields:       string(otherFieldsJSON),
 	}, nil
 }
 
 func (sh *SupplierHandler) Create(ctx context.Context, spl *supplier.Supplier) (*supplier.Id, error) {
+	var otherFields map[string]interface{}
+	if err := json.Unmarshal([]byte(spl.OtherFields), &otherFields); err != nil {
+		return nil, err
+	}
+
 	id, err := sh.service.Supplier.Create(ctx, domain.Supplier{
 		ID:                spl.Id,
 		Name:              spl.Name,
@@ -77,7 +88,7 @@ func (sh *SupplierHandler) Create(ctx context.Context, spl *supplier.Supplier) (
 		RegistrationDate:  spl.RegistrationDate.AsTime(),
 		PaymentTerms:      spl.PaymentTerms,
 		IsActive:          spl.IsActive,
-		OtherFields:       spl.OtherFields,
+		OtherFields:       otherFields,
 	})
 	if err != nil {
 		return nil, err

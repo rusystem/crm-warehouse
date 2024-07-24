@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/rusystem/crm-warehouse/internal/service"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/warehouse"
@@ -23,6 +24,11 @@ func (wh *WarehouseHandler) GetById(ctx context.Context, id *warehouse.Id) (*war
 		return nil, err
 	}
 
+	otherFieldsJSON, err := json.Marshal(whs.OtherFields)
+	if err != nil {
+		return nil, err
+	}
+
 	return &warehouse.Warehouse{
 		Id:                whs.ID,
 		Name:              whs.Name,
@@ -32,12 +38,17 @@ func (wh *WarehouseHandler) GetById(ctx context.Context, id *warehouse.Id) (*war
 		Email:             whs.Email,
 		MaxCapacity:       whs.MaxCapacity,
 		CurrentOccupancy:  whs.CurrentOccupancy,
-		OtherFields:       whs.OtherFields,
+		OtherFields:       string(otherFieldsJSON),
 		Country:           whs.Country,
 	}, nil
 }
 
 func (wh *WarehouseHandler) Create(ctx context.Context, whs *warehouse.Warehouse) (*warehouse.Id, error) {
+	var otherFields map[string]interface{}
+	if err := json.Unmarshal([]byte(whs.OtherFields), &otherFields); err != nil {
+		return nil, err
+	}
+
 	id, err := wh.service.Warehouse.Create(ctx, domain.Warehouse{
 		ID:                whs.Id,
 		Name:              whs.Name,
@@ -47,7 +58,7 @@ func (wh *WarehouseHandler) Create(ctx context.Context, whs *warehouse.Warehouse
 		Email:             whs.Email,
 		MaxCapacity:       whs.MaxCapacity,
 		CurrentOccupancy:  whs.CurrentOccupancy,
-		OtherFields:       whs.OtherFields,
+		OtherFields:       otherFields,
 		Country:           whs.Country,
 	})
 	if err != nil {
