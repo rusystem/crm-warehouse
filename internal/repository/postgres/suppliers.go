@@ -76,7 +76,7 @@ func (sr *SuppliersPostgresRepository) GetById(ctx context.Context, id int64) (d
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Supplier{}, fmt.Errorf("supplier with ID %d not found", id)
+			return domain.Supplier{}, domain.ErrSupplierNotFound
 		}
 
 		return domain.Supplier{}, err

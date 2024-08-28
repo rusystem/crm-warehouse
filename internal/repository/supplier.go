@@ -55,5 +55,5 @@ func (sr *SuppliersRepository) GetById(ctx context.Context, id int64) (domain.Su
 		}
 	}
 
-	return supplier, nil
+	return supplier, err
 }

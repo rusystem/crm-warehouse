@@ -3,9 +3,12 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/rusystem/crm-warehouse/internal/service"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/supplier"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -22,7 +25,11 @@ func NewSupplierHandler(service *service.Service) *SupplierHandler {
 func (sh *SupplierHandler) GetById(ctx context.Context, id *supplier.Id) (*supplier.Supplier, error) {
 	spl, err := sh.service.Supplier.GetById(ctx, id.Id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, domain.ErrSupplierNotFound) {
+			return nil, status.Errorf(codes.NotFound, "supplier with ID %d not found", id.Id)
+		}
+
+		return nil, status.Errorf(codes.Internal, "internal server error - %v", err)
 	}
 
 	otherFieldsJSON, err := json.Marshal(spl.OtherFields)

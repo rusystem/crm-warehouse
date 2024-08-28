@@ -17,7 +17,6 @@ type Config struct {
 	Clickhouse Clickhouse
 	Memcache   Memcache
 	Nats       Nats
-	Telegram   Telegram
 	IsProd     bool
 
 	Grpc struct {
@@ -90,19 +89,15 @@ func New(isProd bool) (*Config, error) {
 		return nil, err
 	}
 
-	if err := envconfig.Process("clickhouse", &cfg.Nats); err != nil {
+	if err := envconfig.Process("clickhouse", &cfg.Clickhouse); err != nil {
 		return nil, err
 	}
 
-	if err := envconfig.Process("memcache", &cfg.Nats); err != nil {
+	if err := envconfig.Process("memcache", &cfg.Memcache); err != nil {
 		return nil, err
 	}
 
 	if err := envconfig.Process("nats", &cfg.Nats); err != nil {
-		return nil, err
-	}
-
-	if err := envconfig.Process("telegram", &cfg.Telegram); err != nil {
 		return nil, err
 	}
 

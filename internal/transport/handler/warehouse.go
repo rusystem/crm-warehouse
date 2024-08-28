@@ -3,9 +3,12 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/rusystem/crm-warehouse/internal/service"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/warehouse"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type WarehouseHandler struct {
@@ -21,7 +24,11 @@ func NewWarehouseHandler(service *service.Service) *WarehouseHandler {
 func (wh *WarehouseHandler) GetById(ctx context.Context, id *warehouse.Id) (*warehouse.Warehouse, error) {
 	whs, err := wh.service.Warehouse.GetById(ctx, id.Id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, domain.ErrWarehouseNotFound) {
+			return nil, status.Errorf(codes.NotFound, "warehouse with ID %d not found", id.Id)
+		}
+
+		return nil, status.Errorf(codes.Internal, "internal server error - %v", err)
 	}
 
 	otherFieldsJSON, err := json.Marshal(whs.OtherFields)

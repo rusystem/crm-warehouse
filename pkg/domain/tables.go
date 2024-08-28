@@ -1,7 +1,7 @@
 package domain
 
 var (
-	TableWarehouse                 = "warehouses"
+	TableWarehouse                 = "\"warehouses\""
 	TablePlanningMaterials         = "planning_materials"
 	TablePurchasedMaterials        = "purchased_materials"
 	TablePlanningMaterialsArchive  = "planning_materials_archive"

@@ -55,5 +55,5 @@ func (wr *WarehouseRepository) GetById(ctx context.Context, id int64) (domain.Wa
 		}
 	}
 
-	return warehouse, nil
+	return warehouse, err
 }

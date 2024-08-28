@@ -68,7 +68,7 @@ func (wpr *WarehousePostgresRepository) GetById(ctx context.Context, id int64) (
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Warehouse{}, fmt.Errorf("warehouse with ID %d not found", id)
+			return domain.Warehouse{}, domain.ErrWarehouseNotFound
 		}
 
 		return domain.Warehouse{}, fmt.Errorf("failed to get warehouse by ID: %v", err)

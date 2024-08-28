@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 	"github.com/rusystem/crm-warehouse/pkg/logger"
 	"github.com/tinrab/retry"
 	"time"
