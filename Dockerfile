@@ -5,7 +5,6 @@ ENV GOPATH=/
 
 COPY ./ ./
 
-# install psql
 RUN apt-get update
 
 # build go app
