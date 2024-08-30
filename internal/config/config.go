@@ -13,11 +13,9 @@ const (
 )
 
 type Config struct {
-	Postgres   Postgres
-	Clickhouse Clickhouse
-	Memcache   Memcache
-	Nats       Nats
-	IsProd     bool
+	Postgres Postgres
+	Nats     Nats
+	IsProd   bool
 
 	Grpc struct {
 		Port int64 `mapstructure:"port"`
@@ -39,19 +37,6 @@ type Postgres struct {
 	User     string
 	Password string
 	SSLMode  string
-}
-
-type Clickhouse struct {
-	Host     string
-	Port     int64
-	Database string
-	Username string
-	Password string
-}
-
-type Memcache struct {
-	Host string
-	Port int64
 }
 
 type Nats struct {
@@ -86,14 +71,6 @@ func New(isProd bool) (*Config, error) {
 	}
 
 	if err := envconfig.Process("postgres", &cfg.Postgres); err != nil {
-		return nil, err
-	}
-
-	if err := envconfig.Process("clickhouse", &cfg.Clickhouse); err != nil {
-		return nil, err
-	}
-
-	if err := envconfig.Process("memcache", &cfg.Memcache); err != nil {
 		return nil, err
 	}
 

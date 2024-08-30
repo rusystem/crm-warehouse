@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/rusystem/crm-warehouse/internal/config"
 	"github.com/rusystem/crm-warehouse/internal/repository"
 	grpcServer "github.com/rusystem/crm-warehouse/internal/server/grpc"
@@ -35,12 +34,6 @@ func main() {
 	//	logger.Fatal(fmt.Sprintf("failed to initialize telegram bot, err - %v", err))
 	//} //todo make telegram alert logic
 
-	// init memory cache
-	mc, err := database.NewMemcache(cfg)
-	if err != nil {
-		logger.Fatal(fmt.Sprintf("failed to initialize memcache, err - %v", err))
-	}
-
 	// init nats
 	nc, err := mq.NewNats(cfg)
 	if err != nil {
@@ -63,21 +56,8 @@ func main() {
 		}
 	}(pc)
 
-	// init clickhouse connection
-	ch := database.NewClickhouse(cfg)
-	cdb, err := ch.Init()
-	if err != nil {
-		//logger.Fatal(fmt.Sprintf("clickhouse: failed to connect: %v", err.Error())) //todo вернуть
-		logger.Info(fmt.Sprintf("clickhouse: failed to connect: %v", err.Error()))
-	}
-	defer func(cdb clickhouse.Conn) {
-		if err = cdb.Close(); err != nil {
-			logger.Fatal(fmt.Sprintf("failed to close connection, err: %v", err.Error()))
-		}
-	}(cdb)
-
 	// init dep-s
-	r := repository.New(cfg, mc, pc)
+	r := repository.New(cfg, pc)
 	s := service.New(r, nc)
 	h := transport.New(s)
 
