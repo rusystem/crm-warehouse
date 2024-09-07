@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,14 +22,20 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	WarehouseService_Create_FullMethodName  = "/warehouse.WarehouseService/Create"
 	WarehouseService_GetById_FullMethodName = "/warehouse.WarehouseService/GetById"
+	WarehouseService_Update_FullMethodName  = "/warehouse.WarehouseService/Update"
+	WarehouseService_Delete_FullMethodName  = "/warehouse.WarehouseService/Delete"
+	WarehouseService_GetList_FullMethodName = "/warehouse.WarehouseService/GetList"
 )
 
 // WarehouseServiceClient is the client API for WarehouseService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WarehouseServiceClient interface {
-	Create(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*Id, error)
-	GetById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Warehouse, error)
+	Create(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*WarehouseId, error)
+	GetById(ctx context.Context, in *WarehouseId, opts ...grpc.CallOption) (*Warehouse, error)
+	Update(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Delete(ctx context.Context, in *WarehouseId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetList(ctx context.Context, in *WarehouseCompanyId, opts ...grpc.CallOption) (*WarehouseList, error)
 }
 
 type warehouseServiceClient struct {
@@ -39,9 +46,9 @@ func NewWarehouseServiceClient(cc grpc.ClientConnInterface) WarehouseServiceClie
 	return &warehouseServiceClient{cc}
 }
 
-func (c *warehouseServiceClient) Create(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*Id, error) {
+func (c *warehouseServiceClient) Create(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*WarehouseId, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Id)
+	out := new(WarehouseId)
 	err := c.cc.Invoke(ctx, WarehouseService_Create_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -49,10 +56,40 @@ func (c *warehouseServiceClient) Create(ctx context.Context, in *Warehouse, opts
 	return out, nil
 }
 
-func (c *warehouseServiceClient) GetById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Warehouse, error) {
+func (c *warehouseServiceClient) GetById(ctx context.Context, in *WarehouseId, opts ...grpc.CallOption) (*Warehouse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Warehouse)
 	err := c.cc.Invoke(ctx, WarehouseService_GetById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *warehouseServiceClient) Update(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WarehouseService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *warehouseServiceClient) Delete(ctx context.Context, in *WarehouseId, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, WarehouseService_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *warehouseServiceClient) GetList(ctx context.Context, in *WarehouseCompanyId, opts ...grpc.CallOption) (*WarehouseList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WarehouseList)
+	err := c.cc.Invoke(ctx, WarehouseService_GetList_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,19 +100,31 @@ func (c *warehouseServiceClient) GetById(ctx context.Context, in *Id, opts ...gr
 // All implementations should embed UnimplementedWarehouseServiceServer
 // for forward compatibility
 type WarehouseServiceServer interface {
-	Create(context.Context, *Warehouse) (*Id, error)
-	GetById(context.Context, *Id) (*Warehouse, error)
+	Create(context.Context, *Warehouse) (*WarehouseId, error)
+	GetById(context.Context, *WarehouseId) (*Warehouse, error)
+	Update(context.Context, *Warehouse) (*emptypb.Empty, error)
+	Delete(context.Context, *WarehouseId) (*emptypb.Empty, error)
+	GetList(context.Context, *WarehouseCompanyId) (*WarehouseList, error)
 }
 
 // UnimplementedWarehouseServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedWarehouseServiceServer struct {
 }
 
-func (UnimplementedWarehouseServiceServer) Create(context.Context, *Warehouse) (*Id, error) {
+func (UnimplementedWarehouseServiceServer) Create(context.Context, *Warehouse) (*WarehouseId, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedWarehouseServiceServer) GetById(context.Context, *Id) (*Warehouse, error) {
+func (UnimplementedWarehouseServiceServer) GetById(context.Context, *WarehouseId) (*Warehouse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+}
+func (UnimplementedWarehouseServiceServer) Update(context.Context, *Warehouse) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedWarehouseServiceServer) Delete(context.Context, *WarehouseId) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedWarehouseServiceServer) GetList(context.Context, *WarehouseCompanyId) (*WarehouseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetList not implemented")
 }
 
 // UnsafeWarehouseServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -108,7 +157,7 @@ func _WarehouseService_Create_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _WarehouseService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Id)
+	in := new(WarehouseId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -120,7 +169,61 @@ func _WarehouseService_GetById_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: WarehouseService_GetById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarehouseServiceServer).GetById(ctx, req.(*Id))
+		return srv.(WarehouseServiceServer).GetById(ctx, req.(*WarehouseId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WarehouseService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Warehouse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WarehouseServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WarehouseService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WarehouseServiceServer).Update(ctx, req.(*Warehouse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WarehouseService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WarehouseId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WarehouseServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WarehouseService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WarehouseServiceServer).Delete(ctx, req.(*WarehouseId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WarehouseService_GetList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WarehouseCompanyId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WarehouseServiceServer).GetList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WarehouseService_GetList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WarehouseServiceServer).GetList(ctx, req.(*WarehouseCompanyId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -139,6 +242,18 @@ var WarehouseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetById",
 			Handler:    _WarehouseService_GetById_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _WarehouseService_Update_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _WarehouseService_Delete_Handler,
+		},
+		{
+			MethodName: "GetList",
+			Handler:    _WarehouseService_GetList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

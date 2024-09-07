@@ -35,6 +35,7 @@ type Supplier struct {
 	PaymentTerms      string                 `json:"payment_terms"`        // Условия оплаты по контракту
 	IsActive          bool                   `json:"is_active"`            // Статус активности поставщика (активен/неактивен)
 	OtherFields       map[string]interface{} `json:"other_fields"`         // Дополнительные пользовательские поля
+	CompanyId         int64                  `json:"company_id"`           // ID компании
 }
 
 type SuppliersClient struct {
@@ -67,7 +68,7 @@ func (s *SuppliersClient) GetById(ctx context.Context, id int64) (Supplier, erro
 		return Supplier{}, errors.New("calls grpc: id can`t be zero")
 	}
 
-	resp, err := s.supplierClient.GetById(ctx, &supplier.Id{Id: id})
+	resp, err := s.supplierClient.GetById(ctx, &supplier.SupplierId{Id: id})
 	if err != nil {
 		return Supplier{}, err
 	}
@@ -102,6 +103,7 @@ func (s *SuppliersClient) GetById(ctx context.Context, id int64) (Supplier, erro
 		PaymentTerms:      resp.PaymentTerms,
 		IsActive:          resp.IsActive,
 		OtherFields:       otherFields,
+		CompanyId:         resp.CompanyId,
 	}, nil
 }
 
@@ -136,10 +138,101 @@ func (s *SuppliersClient) Create(ctx context.Context, spl Supplier) (int64, erro
 		PaymentTerms:      spl.PaymentTerms,
 		IsActive:          spl.IsActive,
 		OtherFields:       string(otherFieldsJSON),
+		CompanyId:         spl.CompanyId,
 	})
 	if err != nil {
 		return 0, err
 	}
 
 	return resp.Id, nil
+}
+
+func (s *SuppliersClient) Update(ctx context.Context, spl Supplier) error {
+	otherFieldsJSON, err := json.Marshal(spl.OtherFields)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.supplierClient.Update(ctx, &supplier.Supplier{
+		Id:                spl.ID,
+		Name:              spl.Name,
+		LegalAddress:      spl.LegalAddress,
+		ActualAddress:     spl.ActualAddress,
+		WarehouseAddress:  spl.WarehouseAddress,
+		ContactPerson:     spl.ContactPerson,
+		Phone:             spl.Phone,
+		Email:             spl.Email,
+		Website:           spl.Website,
+		ContractNumber:    spl.ContractNumber,
+		ProductCategories: spl.ProductCategories,
+		PurchaseAmount:    spl.PurchaseAmount,
+		Balance:           spl.Balance,
+		ProductTypes:      spl.ProductTypes,
+		Comments:          spl.Comments,
+		Files:             spl.Files,
+		Country:           spl.Country,
+		Region:            spl.Region,
+		TaxId:             spl.TaxID,
+		BankDetails:       spl.BankDetails,
+		RegistrationDate:  timestamppb.New(spl.RegistrationDate),
+		PaymentTerms:      spl.PaymentTerms,
+		IsActive:          spl.IsActive,
+		OtherFields:       string(otherFieldsJSON),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *SuppliersClient) Delete(ctx context.Context, id int64) error {
+	_, err := s.supplierClient.Delete(ctx, &supplier.SupplierId{Id: id})
+	return err
+}
+
+func (s *SuppliersClient) GetList(ctx context.Context, companyId int64) ([]Supplier, error) {
+	var suppliers []Supplier
+
+	resp, err := s.supplierClient.GetList(ctx, &supplier.SupplierCompanyId{Id: companyId})
+	if err != nil {
+		return suppliers, err
+	}
+
+	for _, sps := range resp.Suppliers {
+		var otherFields map[string]interface{}
+		if err = json.Unmarshal([]byte(sps.OtherFields), &otherFields); err != nil {
+			return suppliers, err
+		}
+
+		suppliers = append(suppliers, Supplier{
+			ID:                sps.Id,
+			Name:              sps.Name,
+			LegalAddress:      sps.LegalAddress,
+			ActualAddress:     sps.ActualAddress,
+			WarehouseAddress:  sps.WarehouseAddress,
+			ContactPerson:     sps.ContactPerson,
+			Phone:             sps.Phone,
+			Email:             sps.Email,
+			Website:           sps.Website,
+			ContractNumber:    sps.ContractNumber,
+			ProductCategories: sps.ProductCategories,
+			PurchaseAmount:    sps.PurchaseAmount,
+			Balance:           sps.Balance,
+			ProductTypes:      sps.ProductTypes,
+			Comments:          sps.Comments,
+			Files:             sps.Files,
+			Country:           sps.Country,
+			Region:            sps.Region,
+			TaxID:             sps.TaxId,
+			BankDetails:       sps.BankDetails,
+			RegistrationDate:  sps.RegistrationDate.AsTime(),
+			PaymentTerms:      sps.PaymentTerms,
+			IsActive:          sps.IsActive,
+			OtherFields:       otherFields,
+			CompanyId:         sps.CompanyId,
+		})
+	}
+
+	return suppliers, nil
 }

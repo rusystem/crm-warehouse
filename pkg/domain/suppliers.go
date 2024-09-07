@@ -27,4 +27,5 @@ type Supplier struct {
 	PaymentTerms      string                 `json:"payment_terms"`      // Условия оплаты по контракту
 	IsActive          bool                   `json:"is_active"`          // Статус активности поставщика (активен/неактивен)
 	OtherFields       map[string]interface{} `json:"other_fields"`       // Дополнительные пользовательские поля
+	CompanyID         int64                  `json:"company_id"`         // ID компании
 }

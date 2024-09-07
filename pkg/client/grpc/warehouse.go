@@ -19,6 +19,7 @@ type Warehouse struct {
 	CurrentOccupancy  int64                  `json:"current_occupancy"`    // Текущая заполняемость склада
 	OtherFields       map[string]interface{} `json:"other_fields"`         // Дополнительные пользовательские поля
 	Country           string                 `json:"country"`              // Страна склада
+	CompanyId         int64                  `json:"company_id"`           // Уникальный идентификатор компании
 }
 
 type WarehouseClient struct {
@@ -51,7 +52,7 @@ func (w *WarehouseClient) GetById(ctx context.Context, id int64) (Warehouse, err
 		return Warehouse{}, errors.New("calls grpc: id can`t be zero")
 	}
 
-	resp, err := w.warehouseClient.GetById(ctx, &warehouse.Id{Id: id})
+	resp, err := w.warehouseClient.GetById(ctx, &warehouse.WarehouseId{Id: id})
 	if err != nil {
 		return Warehouse{}, err
 	}
@@ -72,6 +73,7 @@ func (w *WarehouseClient) GetById(ctx context.Context, id int64) (Warehouse, err
 		CurrentOccupancy:  resp.CurrentOccupancy,
 		OtherFields:       otherFields,
 		Country:           resp.Country,
+		CompanyId:         resp.CompanyId,
 	}, nil
 }
 
@@ -92,10 +94,72 @@ func (w *WarehouseClient) Create(ctx context.Context, wh Warehouse) (int64, erro
 		CurrentOccupancy:  wh.CurrentOccupancy,
 		OtherFields:       string(otherFieldsJSON),
 		Country:           wh.Country,
+		CompanyId:         wh.CompanyId,
 	})
 	if err != nil {
 		return 0, err
 	}
 
 	return resp.Id, nil
+}
+
+func (w *WarehouseClient) Update(ctx context.Context, wh Warehouse) error {
+	otherFieldsJSON, err := json.Marshal(wh.OtherFields)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.warehouseClient.Update(ctx, &warehouse.Warehouse{
+		Id:                wh.ID,
+		Name:              wh.Name,
+		Address:           wh.Address,
+		ResponsiblePerson: wh.ResponsiblePerson,
+		Phone:             wh.Phone,
+		Email:             wh.Email,
+		MaxCapacity:       wh.MaxCapacity,
+		CurrentOccupancy:  wh.CurrentOccupancy,
+		OtherFields:       string(otherFieldsJSON),
+		Country:           wh.Country,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (w *WarehouseClient) Delete(ctx context.Context, id int64) error {
+	_, err := w.warehouseClient.Delete(ctx, &warehouse.WarehouseId{Id: id})
+	return err
+}
+
+func (w *WarehouseClient) GetList(ctx context.Context, companyId int64) ([]Warehouse, error) {
+	var warehouses []Warehouse
+	resp, err := w.warehouseClient.GetList(ctx, &warehouse.WarehouseCompanyId{Id: companyId})
+	if err != nil {
+		return warehouses, err
+	}
+
+	for _, wh := range resp.Warehouses {
+		var otherFields map[string]interface{}
+		if err = json.Unmarshal([]byte(wh.OtherFields), &otherFields); err != nil {
+			return warehouses, err
+		}
+
+		warehouses = append(warehouses, Warehouse{
+			ID:                wh.Id,
+			Name:              wh.Name,
+			Address:           wh.Address,
+			ResponsiblePerson: wh.ResponsiblePerson,
+			Phone:             wh.Phone,
+			Email:             wh.Email,
+			MaxCapacity:       wh.MaxCapacity,
+			CurrentOccupancy:  wh.CurrentOccupancy,
+			OtherFields:       otherFields,
+			Country:           wh.Country,
+			CompanyId:         wh.CompanyId,
+		})
+	}
+
+	return warehouses, nil
 }

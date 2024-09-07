@@ -12,4 +12,5 @@ type Warehouse struct {
 	CurrentOccupancy  int64                  `json:"current_occupancy"`  // Текущая заполняемость склада
 	OtherFields       map[string]interface{} `json:"other_fields"`       // Дополнительные пользовательские поля
 	Country           string                 `json:"country"`            // Страна склада
+	CompanyID         int64                  `json:"company_id"`         // ID компании
 }
