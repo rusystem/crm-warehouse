@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/warehouse"
 	"google.golang.org/grpc"
 )
@@ -54,6 +55,10 @@ func (w *WarehouseClient) GetById(ctx context.Context, id int64) (Warehouse, err
 
 	resp, err := w.warehouseClient.GetById(ctx, &warehouse.WarehouseId{Id: id})
 	if err != nil {
+		if err.Error() == "rpc error: code = Unknown desc = sql: no rows in result set" {
+			return Warehouse{}, domain.ErrWarehouseNotFound
+		}
+
 		return Warehouse{}, err
 	}
 

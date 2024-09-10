@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/rusystem/crm-warehouse/pkg/domain"
 	"github.com/rusystem/crm-warehouse/pkg/gen/proto/supplier"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -70,6 +71,10 @@ func (s *SuppliersClient) GetById(ctx context.Context, id int64) (Supplier, erro
 
 	resp, err := s.supplierClient.GetById(ctx, &supplier.SupplierId{Id: id})
 	if err != nil {
+		if err.Error() == "rpc error: code = Unknown desc = sql: no rows in result set" {
+			return Supplier{}, domain.ErrSupplierNotFound
+		}
+
 		return Supplier{}, err
 	}
 

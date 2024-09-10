@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 )
@@ -78,10 +77,6 @@ func (sr *SuppliersPostgresRepository) GetById(ctx context.Context, id int64) (d
 		&supplier.RegistrationDate, &supplier.PaymentTerms, &supplier.IsActive, &otherFieldsJSON, &supplier.CompanyID,
 	)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return domain.Supplier{}, domain.ErrSupplierNotFound
-		}
-
 		return domain.Supplier{}, err
 	}
 

@@ -48,6 +48,7 @@ func (wh *WarehouseHandler) GetById(ctx context.Context, id *warehouse.Warehouse
 		CurrentOccupancy:  whs.CurrentOccupancy,
 		OtherFields:       string(otherFieldsJSON),
 		Country:           whs.Country,
+		CompanyId:         whs.CompanyID,
 	}, nil
 }
 
@@ -68,6 +69,7 @@ func (wh *WarehouseHandler) Create(ctx context.Context, whs *warehouse.Warehouse
 		CurrentOccupancy:  whs.CurrentOccupancy,
 		OtherFields:       otherFields,
 		Country:           whs.Country,
+		CompanyID:         whs.CompanyId,
 	})
 	if err != nil {
 		return nil, err
@@ -132,6 +134,7 @@ func (wh *WarehouseHandler) GetList(ctx context.Context, req *warehouse.Warehous
 			CurrentOccupancy:  w.CurrentOccupancy,
 			OtherFields:       string(otherFieldsJSON),
 			Country:           w.Country,
+			CompanyId:         w.CompanyID,
 		})
 	}
 
