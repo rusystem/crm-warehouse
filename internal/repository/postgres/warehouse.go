@@ -37,7 +37,7 @@ func (wpr *WarehousePostgresRepository) Create(ctx context.Context, warehouse do
         max_capacity, current_occupancy, other_fields, country, company_id
     ) VALUES (
         $1, $2, $3, $4, $5,
-        $6, $7, $8, $9
+        $6, $7, $8, $9, $10
     ) RETURNING id
     `, domain.TableWarehouse)
 
