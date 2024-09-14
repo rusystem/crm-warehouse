@@ -30,8 +30,13 @@ type Material struct {
 	ResponsiblePerson      string                 `json:"responsible_person"`       // Ответственное лицо за товар
 	StorageCost            float64                `json:"storage_cost"`             // Стоимость хранения товара
 	WarehouseSection       string                 `json:"warehouse_section"`        // Секция склада, где хранится товар
-	Barcode                string                 `json:"barcode"`                  // Штрих-код товара
 	IncomingDeliveryNumber string                 `json:"incoming_delivery_number"` // Входящий номер поставки
 	OtherFields            map[string]interface{} `json:"other_fields"`             // Дополнительные пользовательские поля
 	CompanyID              int64                  `json:"company_id"`               // Кабинет компании к кому привязан товар
+}
+
+type MaterialParams struct {
+	Limit     int64
+	Offset    int64
+	CompanyId int64
 }

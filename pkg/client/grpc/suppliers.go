@@ -66,7 +66,7 @@ func (s *SuppliersClient) Close() error {
 
 func (s *SuppliersClient) GetById(ctx context.Context, id int64) (Supplier, error) {
 	if id <= 0 {
-		return Supplier{}, errors.New("calls grpc: id can`t be zero")
+		return Supplier{}, errors.New("suppliers, grpc: id can`t be zero")
 	}
 
 	resp, err := s.supplierClient.GetById(ctx, &supplier.SupplierId{Id: id})

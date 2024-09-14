@@ -62,7 +62,7 @@ func main() {
 	h := transport.New(s)
 
 	//init and start grpc server
-	grpcSrv := grpcServer.New(h.Warehouse, h.Supplier)
+	grpcSrv := grpcServer.New(h.Warehouse, h.Supplier, h.Materials)
 	go func() {
 		if err := grpcSrv.Run(cfg.Grpc.Port); err != nil {
 			logger.Fatal(fmt.Sprintf("failed to start grpc server, err: %v", err))

@@ -8,11 +8,13 @@ import (
 type Repository struct {
 	Suppliers *SuppliersRepository
 	Warehouse *WarehouseRepository
+	Materials *MaterialsRepository
 }
 
 func New(cfg *config.Config, postgres *sql.DB) *Repository {
 	return &Repository{
 		Suppliers: NewSuppliersRepository(cfg, postgres),
 		Warehouse: NewWarehouseRepository(cfg, postgres),
+		Materials: NewMaterialsRepository(cfg, postgres),
 	}
 }

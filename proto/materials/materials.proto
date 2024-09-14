@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package materials;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "../gen/proto/materials";
+
+service MaterialService {
+  rpc CreatePlanning(Material) returns(MaterialId);
+  rpc UpdatePlanning(Material) returns(google.protobuf.Empty);
+  rpc DeletePlanning(MaterialId) returns(google.protobuf.Empty);
+  rpc GetPlanning(MaterialId) returns(Material);
+  rpc GetListPlanning(MaterialParams) returns(MaterialList);
+  rpc MovePlanningToPurchased(MaterialId) returns(MaterialId);
+
+  rpc CreatePurchased(Material) returns(MaterialId);
+  rpc UpdatePurchased(Material) returns(google.protobuf.Empty);
+  rpc DeletePurchased(MaterialId) returns(google.protobuf.Empty);
+  rpc GetPurchased(MaterialId) returns(Material);
+  rpc GetListPurchased(MaterialParams) returns(MaterialList);
+  rpc MovePurchasedToArchive(MaterialId) returns(google.protobuf.Empty);
+
+  rpc GetPlanningArchive(MaterialId) returns(Material);
+  rpc GetPurchasedArchive(MaterialId) returns(Material);
+  rpc GetListPlanningArchive(MaterialParams) returns(MaterialList);
+  rpc GetListPurchasedArchive(MaterialParams) returns(MaterialList);
+  rpc DeletePlanningArchive(MaterialId) returns(google.protobuf.Empty);
+  rpc DeletePurchasedArchive(MaterialId) returns(google.protobuf.Empty);
+}
+
+message Material {
+  int64 id = 1;                                   // Уникальный идентификатор записи
+  int64 warehouse_id = 2;                         // Id склада
+  int64 item_id = 3;                              // Идентификатор товара
+  string name = 4;                                // Наименование товара
+  string by_invoice = 5;                          // Накладная на товар
+  string article = 6;                             // Артикул товара
+  string product_category = 7;                    // Категория товара
+  string unit = 8;                                // Единица измерения
+  int64 total_quantity = 9;                       // Общее количество товара
+  int64 volume = 10;                              // Объем товара
+  double price_without_vat = 11;                  // Цена без НДС
+  double total_without_vat = 12;                  // Общая стоимость без НДС
+  int64 supplier_id = 13;                         // Поставщик товара
+  string location = 14;                           // Локация на складе
+  google.protobuf.Timestamp contract = 15;        // Дата договора в формате строки
+  string file = 16;                               // Файл, связанный с товаром
+  string status = 17;                             // Статус товара
+  string comments = 18;                           // Комментарии
+  string reserve = 19;                            // Резерв товара
+  google.protobuf.Timestamp received_date = 20;   // Дата поступления товара в формате строки
+  google.protobuf.Timestamp last_updated = 21;    // Дата последнего обновления информации о товаре в формате строки
+  int64 min_stock_level = 22;                     // Минимальный уровень запаса
+  google.protobuf.Timestamp expiration_date = 23; // Срок годности товара в формате строки
+  string responsible_person = 24;                 // Ответственное лицо за товар
+  double storage_cost = 25;                       // Стоимость хранения товара
+  string warehouse_section = 26;                  // Секция склада, где хранится товар
+  string incoming_delivery_number = 27;           // Входящий номер поставки
+  string other_fields = 28;                       // Дополнительные пользовательские поля
+  int64 company_id = 29;                          // Кабинет компании к кому привязан товар
+}
+
+message MaterialId {
+  int64  Id = 1;
+  int64 ItemId = 2;
+}
+
+message MaterialList {
+  repeated Material materials = 1;
+}
+
+message MaterialParams {
+  int64 Limit = 1;
+  int64 Offset = 2;
+  int64 CompanyId = 3;
+}
