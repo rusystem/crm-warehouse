@@ -29,6 +29,8 @@ type Materials interface {
 	GetPurchasedArchiveList(ctx context.Context, params domain.MaterialParams) ([]domain.Material, error)
 	DeletePlanningArchive(ctx context.Context, id int64) error
 	DeletePurchasedArchive(ctx context.Context, id int64) error
+
+	Search(ctx context.Context, param domain.Param) ([]domain.Material, error)
 }
 
 type MaterialsRepository struct {
@@ -113,4 +115,8 @@ func (mr *MaterialsRepository) DeletePlanningArchive(ctx context.Context, id int
 
 func (mr *MaterialsRepository) DeletePurchasedArchive(ctx context.Context, id int64) error {
 	return mr.psql.DeletePurchasedArchive(ctx, id)
+}
+
+func (mr *MaterialsRepository) Search(ctx context.Context, param domain.Param) ([]domain.Material, error) {
+	return mr.psql.Search(ctx, param)
 }

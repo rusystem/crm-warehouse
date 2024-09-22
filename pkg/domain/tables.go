@@ -7,6 +7,5 @@ var (
 	TablePlanningMaterialsArchive  = "planning_materials_archive"
 	TablePurchasedMaterialsArchive = "purchased_materials_archive"
 	TableSupplier                  = "suppliers"
-	TableUsers                     = "users"
-	TableCompanies                 = "companies"
+	TableMaterialCategories        = "material_categories"
 )

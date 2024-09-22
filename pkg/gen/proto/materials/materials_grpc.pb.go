@@ -38,6 +38,13 @@ const (
 	MaterialService_GetListPurchasedArchive_FullMethodName = "/materials.MaterialService/GetListPurchasedArchive"
 	MaterialService_DeletePlanningArchive_FullMethodName   = "/materials.MaterialService/DeletePlanningArchive"
 	MaterialService_DeletePurchasedArchive_FullMethodName  = "/materials.MaterialService/DeletePurchasedArchive"
+	MaterialService_SearchMaterial_FullMethodName          = "/materials.MaterialService/SearchMaterial"
+	MaterialService_CreateMaterialCategory_FullMethodName  = "/materials.MaterialService/CreateMaterialCategory"
+	MaterialService_GetByIdMaterialCategory_FullMethodName = "/materials.MaterialService/GetByIdMaterialCategory"
+	MaterialService_UpdateMaterialCategory_FullMethodName  = "/materials.MaterialService/UpdateMaterialCategory"
+	MaterialService_DeleteMaterialCategory_FullMethodName  = "/materials.MaterialService/DeleteMaterialCategory"
+	MaterialService_GetListMaterialCategory_FullMethodName = "/materials.MaterialService/GetListMaterialCategory"
+	MaterialService_SearchMaterialCategory_FullMethodName  = "/materials.MaterialService/SearchMaterialCategory"
 )
 
 // MaterialServiceClient is the client API for MaterialService service.
@@ -62,6 +69,13 @@ type MaterialServiceClient interface {
 	GetListPurchasedArchive(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialList, error)
 	DeletePlanningArchive(ctx context.Context, in *MaterialId, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	DeletePurchasedArchive(ctx context.Context, in *MaterialId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SearchMaterial(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialList, error)
+	CreateMaterialCategory(ctx context.Context, in *MaterialCategory, opts ...grpc.CallOption) (*MaterialCategoryId, error)
+	GetByIdMaterialCategory(ctx context.Context, in *MaterialCategoryId, opts ...grpc.CallOption) (*MaterialCategory, error)
+	UpdateMaterialCategory(ctx context.Context, in *MaterialCategory, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteMaterialCategory(ctx context.Context, in *MaterialCategoryId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetListMaterialCategory(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialCategoryList, error)
+	SearchMaterialCategory(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialCategoryList, error)
 }
 
 type materialServiceClient struct {
@@ -252,6 +266,76 @@ func (c *materialServiceClient) DeletePurchasedArchive(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *materialServiceClient) SearchMaterial(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MaterialList)
+	err := c.cc.Invoke(ctx, MaterialService_SearchMaterial_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) CreateMaterialCategory(ctx context.Context, in *MaterialCategory, opts ...grpc.CallOption) (*MaterialCategoryId, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MaterialCategoryId)
+	err := c.cc.Invoke(ctx, MaterialService_CreateMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) GetByIdMaterialCategory(ctx context.Context, in *MaterialCategoryId, opts ...grpc.CallOption) (*MaterialCategory, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MaterialCategory)
+	err := c.cc.Invoke(ctx, MaterialService_GetByIdMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) UpdateMaterialCategory(ctx context.Context, in *MaterialCategory, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MaterialService_UpdateMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) DeleteMaterialCategory(ctx context.Context, in *MaterialCategoryId, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MaterialService_DeleteMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) GetListMaterialCategory(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialCategoryList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MaterialCategoryList)
+	err := c.cc.Invoke(ctx, MaterialService_GetListMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *materialServiceClient) SearchMaterialCategory(ctx context.Context, in *MaterialParams, opts ...grpc.CallOption) (*MaterialCategoryList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MaterialCategoryList)
+	err := c.cc.Invoke(ctx, MaterialService_SearchMaterialCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MaterialServiceServer is the server API for MaterialService service.
 // All implementations should embed UnimplementedMaterialServiceServer
 // for forward compatibility
@@ -274,6 +358,13 @@ type MaterialServiceServer interface {
 	GetListPurchasedArchive(context.Context, *MaterialParams) (*MaterialList, error)
 	DeletePlanningArchive(context.Context, *MaterialId) (*emptypb.Empty, error)
 	DeletePurchasedArchive(context.Context, *MaterialId) (*emptypb.Empty, error)
+	SearchMaterial(context.Context, *MaterialParams) (*MaterialList, error)
+	CreateMaterialCategory(context.Context, *MaterialCategory) (*MaterialCategoryId, error)
+	GetByIdMaterialCategory(context.Context, *MaterialCategoryId) (*MaterialCategory, error)
+	UpdateMaterialCategory(context.Context, *MaterialCategory) (*emptypb.Empty, error)
+	DeleteMaterialCategory(context.Context, *MaterialCategoryId) (*emptypb.Empty, error)
+	GetListMaterialCategory(context.Context, *MaterialParams) (*MaterialCategoryList, error)
+	SearchMaterialCategory(context.Context, *MaterialParams) (*MaterialCategoryList, error)
 }
 
 // UnimplementedMaterialServiceServer should be embedded to have forward compatible implementations.
@@ -333,6 +424,27 @@ func (UnimplementedMaterialServiceServer) DeletePlanningArchive(context.Context,
 }
 func (UnimplementedMaterialServiceServer) DeletePurchasedArchive(context.Context, *MaterialId) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePurchasedArchive not implemented")
+}
+func (UnimplementedMaterialServiceServer) SearchMaterial(context.Context, *MaterialParams) (*MaterialList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchMaterial not implemented")
+}
+func (UnimplementedMaterialServiceServer) CreateMaterialCategory(context.Context, *MaterialCategory) (*MaterialCategoryId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMaterialCategory not implemented")
+}
+func (UnimplementedMaterialServiceServer) GetByIdMaterialCategory(context.Context, *MaterialCategoryId) (*MaterialCategory, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByIdMaterialCategory not implemented")
+}
+func (UnimplementedMaterialServiceServer) UpdateMaterialCategory(context.Context, *MaterialCategory) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMaterialCategory not implemented")
+}
+func (UnimplementedMaterialServiceServer) DeleteMaterialCategory(context.Context, *MaterialCategoryId) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMaterialCategory not implemented")
+}
+func (UnimplementedMaterialServiceServer) GetListMaterialCategory(context.Context, *MaterialParams) (*MaterialCategoryList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListMaterialCategory not implemented")
+}
+func (UnimplementedMaterialServiceServer) SearchMaterialCategory(context.Context, *MaterialParams) (*MaterialCategoryList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchMaterialCategory not implemented")
 }
 
 // UnsafeMaterialServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -670,6 +782,132 @@ func _MaterialService_DeletePurchasedArchive_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaterialService_SearchMaterial_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).SearchMaterial(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_SearchMaterial_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).SearchMaterial(ctx, req.(*MaterialParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_CreateMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialCategory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).CreateMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_CreateMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).CreateMaterialCategory(ctx, req.(*MaterialCategory))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_GetByIdMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialCategoryId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).GetByIdMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_GetByIdMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).GetByIdMaterialCategory(ctx, req.(*MaterialCategoryId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_UpdateMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialCategory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).UpdateMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_UpdateMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).UpdateMaterialCategory(ctx, req.(*MaterialCategory))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_DeleteMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialCategoryId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).DeleteMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_DeleteMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).DeleteMaterialCategory(ctx, req.(*MaterialCategoryId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_GetListMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).GetListMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_GetListMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).GetListMaterialCategory(ctx, req.(*MaterialParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaterialService_SearchMaterialCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MaterialParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaterialServiceServer).SearchMaterialCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaterialService_SearchMaterialCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaterialServiceServer).SearchMaterialCategory(ctx, req.(*MaterialParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MaterialService_ServiceDesc is the grpc.ServiceDesc for MaterialService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -748,6 +986,34 @@ var MaterialService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePurchasedArchive",
 			Handler:    _MaterialService_DeletePurchasedArchive_Handler,
+		},
+		{
+			MethodName: "SearchMaterial",
+			Handler:    _MaterialService_SearchMaterial_Handler,
+		},
+		{
+			MethodName: "CreateMaterialCategory",
+			Handler:    _MaterialService_CreateMaterialCategory_Handler,
+		},
+		{
+			MethodName: "GetByIdMaterialCategory",
+			Handler:    _MaterialService_GetByIdMaterialCategory_Handler,
+		},
+		{
+			MethodName: "UpdateMaterialCategory",
+			Handler:    _MaterialService_UpdateMaterialCategory_Handler,
+		},
+		{
+			MethodName: "DeleteMaterialCategory",
+			Handler:    _MaterialService_DeleteMaterialCategory_Handler,
+		},
+		{
+			MethodName: "GetListMaterialCategory",
+			Handler:    _MaterialService_GetListMaterialCategory_Handler,
+		},
+		{
+			MethodName: "SearchMaterialCategory",
+			Handler:    _MaterialService_SearchMaterialCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -28,6 +28,15 @@ service MaterialService {
   rpc GetListPurchasedArchive(MaterialParams) returns(MaterialList);
   rpc DeletePlanningArchive(MaterialId) returns(google.protobuf.Empty);
   rpc DeletePurchasedArchive(MaterialId) returns(google.protobuf.Empty);
+
+  rpc SearchMaterial(MaterialParams) returns(MaterialList);
+
+  rpc CreateMaterialCategory(MaterialCategory) returns(MaterialCategoryId);
+  rpc GetByIdMaterialCategory(MaterialCategoryId) returns(MaterialCategory);
+  rpc UpdateMaterialCategory(MaterialCategory) returns(google.protobuf.Empty);
+  rpc DeleteMaterialCategory(MaterialCategoryId) returns(google.protobuf.Empty);
+  rpc GetListMaterialCategory(MaterialParams) returns(MaterialCategoryList);
+  rpc SearchMaterialCategory(MaterialParams) returns(MaterialCategoryList);
 }
 
 message Material {
@@ -71,8 +80,30 @@ message MaterialList {
   repeated Material materials = 1;
 }
 
+message MaterialCategory {
+  int64 id = 1; // Уникальный идентификатор категории материала
+  string name = 2; // Название категории материала
+  int64 company_id = 3; // Идентификатор компании, к которой относится категория
+  string description = 4; // Описание категории материала
+  string slug = 5; // Уникальное человекочитаемое имя для URL (slug)
+  google.protobuf.Timestamp created_at = 6; // Время создания записи
+  google.protobuf.Timestamp updated_at = 7; // Время последнего обновления записи
+  bool is_active = 8; // Статус активности категории (true - активна, false - неактивна)
+  string img_url = 9; // Ссылка на изображение или иконку категории
+}
+
+message MaterialCategoryId {
+  int64 Id = 1;
+  int64 CompanyId = 2;
+}
+
+message MaterialCategoryList {
+  repeated MaterialCategory materialCategories = 1;
+}
+
 message MaterialParams {
   int64 Limit = 1;
   int64 Offset = 2;
   int64 CompanyId = 3;
+  string Query = 4;
 }

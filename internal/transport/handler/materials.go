@@ -689,3 +689,223 @@ func (mh *MaterialsHandler) DeletePurchasedArchive(ctx context.Context, req *mat
 
 	return &emptypb.Empty{}, nil
 }
+
+func (mh *MaterialsHandler) SearchMaterial(ctx context.Context, req *materials.MaterialParams) (*materials.MaterialList, error) {
+	if req.Limit <= 0 {
+		return nil, errors.New("materials, grpc handler - invalid limit")
+	}
+
+	if req.Offset < 0 {
+		return nil, errors.New("materials, grpc handler - invalid offset")
+	}
+
+	if req.CompanyId <= 0 {
+		return nil, errors.New("materials, grpc handler - invalid company id")
+	}
+
+	mtrls, err := mh.service.Material.Search(ctx, domain.Param{
+		Limit:     req.Limit,
+		Offset:    req.Offset,
+		CompanyId: req.CompanyId,
+		Query:     req.Query,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*materials.Material, 0, len(mtrls))
+
+	for _, mtrl := range mtrls {
+		otherFieldsJSON, err := json.Marshal(mtrl.OtherFields)
+		if err != nil {
+			return nil, err
+		}
+
+		resp = append(resp, &materials.Material{
+			Id:                     mtrl.ID,
+			WarehouseId:            mtrl.WarehouseID,
+			ItemId:                 mtrl.ItemID,
+			Name:                   mtrl.Name,
+			ByInvoice:              mtrl.ByInvoice,
+			Article:                mtrl.Article,
+			ProductCategory:        mtrl.ProductCategory,
+			Unit:                   mtrl.Unit,
+			TotalQuantity:          mtrl.TotalQuantity,
+			Volume:                 mtrl.Volume,
+			PriceWithoutVat:        mtrl.PriceWithoutVAT,
+			TotalWithoutVat:        mtrl.TotalWithoutVAT,
+			SupplierId:             mtrl.SupplierID,
+			Location:               mtrl.Location,
+			Contract:               timestamppb.New(mtrl.Contract),
+			File:                   mtrl.File,
+			Status:                 mtrl.Status,
+			Comments:               mtrl.Comments,
+			Reserve:                mtrl.Reserve,
+			ReceivedDate:           timestamppb.New(mtrl.ReceivedDate),
+			LastUpdated:            timestamppb.New(mtrl.LastUpdated),
+			MinStockLevel:          mtrl.MinStockLevel,
+			ExpirationDate:         timestamppb.New(mtrl.ExpirationDate),
+			ResponsiblePerson:      mtrl.ResponsiblePerson,
+			StorageCost:            mtrl.StorageCost,
+			WarehouseSection:       mtrl.WarehouseSection,
+			IncomingDeliveryNumber: mtrl.IncomingDeliveryNumber,
+			OtherFields:            string(otherFieldsJSON),
+			CompanyId:              mtrl.CompanyID,
+		})
+	}
+
+	return &materials.MaterialList{
+		Materials: resp,
+	}, nil
+}
+
+func (mh *MaterialsHandler) CreateMaterialCategory(ctx context.Context, category *materials.MaterialCategory) (*materials.MaterialCategoryId, error) {
+	id, err := mh.service.Category.Create(ctx, domain.MaterialCategory{
+		Name:        category.Name,
+		CompanyID:   category.CompanyId,
+		Description: category.Description,
+		Slug:        category.Slug,
+		CreatedAt:   category.CreatedAt.AsTime(),
+		UpdatedAt:   category.UpdatedAt.AsTime(),
+		IsActive:    category.IsActive,
+		ImgURL:      category.ImgUrl,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &materials.MaterialCategoryId{Id: id}, nil
+}
+
+func (mh *MaterialsHandler) GetByIdMaterialCategory(ctx context.Context, req *materials.MaterialCategoryId) (*materials.MaterialCategory, error) {
+	category, err := mh.service.Category.GetById(ctx, req.Id, req.CompanyId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &materials.MaterialCategory{
+		Id:          category.ID,
+		Name:        category.Name,
+		CompanyId:   category.CompanyID,
+		Description: category.Description,
+		Slug:        category.Slug,
+		CreatedAt:   timestamppb.New(category.CreatedAt),
+		UpdatedAt:   timestamppb.New(category.UpdatedAt),
+		IsActive:    category.IsActive,
+		ImgUrl:      category.ImgURL,
+	}, nil
+}
+
+func (mh *MaterialsHandler) UpdateMaterialCategory(ctx context.Context, category *materials.MaterialCategory) (*emptypb.Empty, error) {
+	if err := mh.service.Category.Update(ctx, domain.MaterialCategory{
+		ID:          category.Id,
+		Name:        category.Name,
+		CompanyID:   category.CompanyId,
+		Description: category.Description,
+		Slug:        category.Slug,
+		CreatedAt:   category.CreatedAt.AsTime(),
+		UpdatedAt:   category.UpdatedAt.AsTime(),
+		IsActive:    category.IsActive,
+		ImgURL:      category.ImgUrl,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (mh *MaterialsHandler) DeleteMaterialCategory(ctx context.Context, req *materials.MaterialCategoryId) (*emptypb.Empty, error) {
+	if err := mh.service.Category.Delete(ctx, req.Id, req.CompanyId); err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (mh *MaterialsHandler) GetListMaterialCategory(ctx context.Context, req *materials.MaterialParams) (*materials.MaterialCategoryList, error) {
+	if req.Limit <= 0 {
+		return nil, errors.New("material categories, grpc handler - invalid limit")
+	}
+
+	if req.Offset < 0 {
+		return nil, errors.New("material categories, grpc handler - invalid offset")
+	}
+
+	if req.CompanyId <= 0 {
+		return nil, errors.New("material categories, grpc handler - invalid company id")
+	}
+
+	categories, err := mh.service.Category.List(ctx, domain.Param{
+		Limit:     req.Limit,
+		Offset:    req.Offset,
+		CompanyId: req.CompanyId,
+		Query:     req.Query,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*materials.MaterialCategory, 0, len(categories))
+
+	for _, c := range categories {
+		resp = append(resp, &materials.MaterialCategory{
+			Id:          c.ID,
+			Name:        c.Name,
+			CompanyId:   c.CompanyID,
+			Description: c.Description,
+			Slug:        c.Slug,
+			CreatedAt:   timestamppb.New(c.CreatedAt),
+			UpdatedAt:   timestamppb.New(c.UpdatedAt),
+			IsActive:    c.IsActive,
+			ImgUrl:      c.ImgURL,
+		})
+	}
+
+	return &materials.MaterialCategoryList{
+		MaterialCategories: resp,
+	}, nil
+}
+
+func (mh *MaterialsHandler) SearchMaterialCategory(ctx context.Context, req *materials.MaterialParams) (*materials.MaterialCategoryList, error) {
+	if req.Limit <= 0 {
+		return nil, errors.New("material categories, grpc handler - invalid limit")
+	}
+
+	if req.Offset < 0 {
+		return nil, errors.New("material categories, grpc handler - invalid offset")
+	}
+
+	if req.CompanyId <= 0 {
+		return nil, errors.New("material categories, grpc handler - invalid company id")
+	}
+
+	categories, err := mh.service.Category.Search(ctx, domain.Param{
+		Limit:     req.Limit,
+		Offset:    req.Offset,
+		CompanyId: req.CompanyId,
+		Query:     req.Query,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*materials.MaterialCategory, 0, len(categories))
+
+	for _, c := range categories {
+		resp = append(resp, &materials.MaterialCategory{
+			Id:          c.ID,
+			Name:        c.Name,
+			CompanyId:   c.CompanyID,
+			Description: c.Description,
+			Slug:        c.Slug,
+			CreatedAt:   timestamppb.New(c.CreatedAt),
+			UpdatedAt:   timestamppb.New(c.UpdatedAt),
+			IsActive:    c.IsActive,
+			ImgUrl:      c.ImgURL,
+		})
+	}
+
+	return &materials.MaterialCategoryList{
+		MaterialCategories: resp,
+	}, nil
+}

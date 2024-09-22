@@ -29,6 +29,8 @@ type Materials interface {
 	GetPurchasedArchiveList(ctx context.Context, params domain.MaterialParams) ([]domain.Material, error)
 	DeletePlanningArchive(ctx context.Context, id int64) error
 	DeletePurchasedArchive(ctx context.Context, id int64) error
+
+	Search(ctx context.Context, param domain.Param) ([]domain.Material, error)
 }
 
 type MaterialsPostgresRepository struct {
@@ -640,4 +642,64 @@ func (mr *MaterialsPostgresRepository) DeletePlanningArchive(ctx context.Context
 func (mr *MaterialsPostgresRepository) DeletePurchasedArchive(ctx context.Context, id int64) error {
 	_, err := mr.psql.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = $1", domain.TablePurchasedMaterialsArchive), id)
 	return err
+}
+
+func (mr *MaterialsPostgresRepository) Search(ctx context.Context, param domain.Param) ([]domain.Material, error) {
+	sqlQuery := fmt.Sprintf(`
+        SELECT 'planning_materials' AS table_name, id, warehouse_id, name, product_category, unit, total_quantity, status, company_id 
+        FROM %s
+        WHERE name ILIKE $1 AND company_id = $2
+
+        UNION ALL
+
+        SELECT 'purchased_materials' AS table_name, id, warehouse_id, name, product_category, unit, total_quantity, status, company_id
+        FROM %s
+        WHERE name ILIKE $1 AND company_id = $2
+
+        UNION ALL
+
+        SELECT 'planning_materials_archive' AS table_name, id, warehouse_id, name, product_category, unit, total_quantity, status, company_id
+        FROM %s
+        WHERE name ILIKE $1 AND company_id = $2
+
+        UNION ALL
+
+        SELECT 'purchased_materials_archive' AS table_name, id, warehouse_id, name, product_category, unit, total_quantity, status, company_id
+        FROM %s
+        WHERE name ILIKE $1 AND company_id = $2
+
+        ORDER BY name ASC
+        LIMIT $3 OFFSET $4;
+    `, domain.TablePlanningMaterials, domain.TablePurchasedMaterials, domain.TablePlanningMaterialsArchive, domain.TablePurchasedMaterialsArchive)
+
+	searchPattern := param.Query + "%"
+
+	rows, err := mr.psql.QueryContext(ctx, sqlQuery, searchPattern, param.CompanyId, param.Limit, param.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		if err = rows.Close(); err != nil {
+			return
+		}
+	}(rows)
+
+	var materials []domain.Material
+
+	for rows.Next() {
+		var tableName string //todo подумать надо этим, может возвращать отдельно если потребуется
+		var m domain.Material
+		err := rows.Scan(&tableName, &m.ID, &m.WarehouseID, &m.Name, &m.ProductCategory, &m.Unit, &m.TotalQuantity, &m.Status, &m.CompanyID)
+		if err != nil {
+			return nil, err
+		}
+
+		materials = append(materials, m)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return materials, nil
 }

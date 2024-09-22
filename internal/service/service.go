@@ -9,6 +9,7 @@ type Service struct {
 	Supplier  Supplier
 	Warehouse Warehouse
 	Material  Material
+	Category  Category
 }
 
 func New(repo *repository.Repository, nc *nats.Conn) *Service {
@@ -16,5 +17,6 @@ func New(repo *repository.Repository, nc *nats.Conn) *Service {
 		Supplier:  NewSupplierService(repo),
 		Warehouse: NewWarehouseService(repo),
 		Material:  NewMaterialService(repo),
+		Category:  NewMaterialCategoryService(repo),
 	}
 }
