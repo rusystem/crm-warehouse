@@ -14,6 +14,7 @@ type Warehouse interface {
 	Update(ctx context.Context, warehouse domain.Warehouse) error
 	Delete(ctx context.Context, id int64) error
 	GetListByCompanyId(ctx context.Context, id int64) ([]domain.Warehouse, error)
+	GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error)
 }
 
 type WarehouseRepository struct {
@@ -46,4 +47,8 @@ func (wr *WarehouseRepository) Delete(ctx context.Context, id int64) error {
 
 func (wr *WarehouseRepository) GetListByCompanyId(ctx context.Context, id int64) ([]domain.Warehouse, error) {
 	return wr.psql.GetListByCompanyId(ctx, id)
+}
+
+func (wr *WarehouseRepository) GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error) {
+	return wr.psql.GetResponsibleUsers(ctx, companyId)
 }

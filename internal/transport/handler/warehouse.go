@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type WarehouseHandler struct {
@@ -139,4 +140,37 @@ func (wh *WarehouseHandler) GetList(ctx context.Context, req *warehouse.Warehous
 	}
 
 	return &warehouse.WarehouseList{Warehouses: resp}, nil
+}
+
+func (wh *WarehouseHandler) GetResponsibleUsers(ctx context.Context, req *warehouse.WarehouseId) (*warehouse.UserList, error) {
+	u, err := wh.service.Warehouse.GetResponsibleUsers(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*warehouse.User
+	for _, v := range u {
+		users = append(users, &warehouse.User{
+			Id:                       v.ID,
+			CompanyId:                v.CompanyID,
+			Username:                 v.Username,
+			Name:                     v.Name,
+			Email:                    v.Email,
+			Phone:                    v.Phone,
+			PasswordHash:             v.PasswordHash,
+			CreatedAt:                timestamppb.New(v.CreatedAt),
+			UpdatedAt:                timestamppb.New(v.UpdatedAt),
+			LastLogin:                timestamppb.New(v.LastLogin.Time),
+			IsActive:                 v.IsActive,
+			Role:                     v.Role,
+			Language:                 v.Language,
+			Country:                  v.Country,
+			IsApproved:               v.IsApproved,
+			IsSendSystemNotification: v.IsSendSystemNotification,
+			Sections:                 v.Sections,
+			Position:                 v.Position,
+		})
+	}
+
+	return &warehouse.UserList{Users: users}, nil
 }

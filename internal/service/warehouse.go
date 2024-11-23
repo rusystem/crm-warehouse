@@ -12,6 +12,7 @@ type Warehouse interface {
 	Update(ctx context.Context, warehouse domain.Warehouse) error
 	Delete(ctx context.Context, id int64) error
 	GetListByCompanyId(ctx context.Context, id int64) ([]domain.Warehouse, error)
+	GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error)
 }
 
 type WarehouseService struct {
@@ -42,4 +43,8 @@ func (ws *WarehouseService) Delete(ctx context.Context, id int64) error {
 
 func (ws *WarehouseService) GetListByCompanyId(ctx context.Context, id int64) ([]domain.Warehouse, error) {
 	return ws.repo.Warehouse.GetListByCompanyId(ctx, id)
+}
+
+func (ws *WarehouseService) GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error) {
+	return ws.repo.Warehouse.GetResponsibleUsers(ctx, companyId)
 }

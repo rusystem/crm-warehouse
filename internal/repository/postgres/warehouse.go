@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/lib/pq"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
 )
 
@@ -14,6 +15,7 @@ type Warehouse interface {
 	Update(ctx context.Context, warehouse domain.Warehouse) error
 	Delete(ctx context.Context, id int64) error
 	GetListByCompanyId(ctx context.Context, id int64) ([]domain.Warehouse, error)
+	GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error)
 }
 
 type WarehousePostgresRepository struct {
@@ -148,4 +150,55 @@ func (wpr *WarehousePostgresRepository) GetListByCompanyId(ctx context.Context, 
 	}
 
 	return warehouses, nil
+}
+
+func (wpr *WarehousePostgresRepository) GetResponsibleUsers(ctx context.Context, companyId int64) ([]domain.User, error) {
+	query := fmt.Sprintf(`
+		SELECT 
+		    id, company_id, username, name, email, phone, password_hash, created_at, 
+		    updated_at, last_login, is_active, role, language, country, 
+		    is_approved, is_send_system_notification, sections, position
+		FROM %s
+		WHERE company_id = $1 AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(sections) AS section
+		WHERE section = ANY ($2));
+		`, domain.UsersTable)
+
+	sections := pq.Array([]string{domain.SectionFullCompanyAccess, domain.SectionFullAccess, domain.SectionPurchasePlanningAccess})
+
+	var users []domain.User
+
+	rows, err := wpr.db.QueryContext(ctx, query, companyId, sections)
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		if err := rows.Close(); err != nil {
+			return
+		}
+	}(rows)
+
+	for rows.Next() {
+		var user domain.User
+		var b []byte
+
+		if err := rows.Scan(
+			&user.ID, &user.CompanyID, &user.Username, &user.Name, &user.Email, &user.Phone, &user.PasswordHash, &user.CreatedAt, &user.UpdatedAt,
+			&user.LastLogin, &user.IsActive, &user.Role, &user.Language, &user.Country, &user.IsApproved, &user.IsSendSystemNotification,
+			&b, &user.Position,
+		); err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &user.Sections); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

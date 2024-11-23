@@ -20,11 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	WarehouseService_Create_FullMethodName  = "/warehouse.WarehouseService/Create"
-	WarehouseService_GetById_FullMethodName = "/warehouse.WarehouseService/GetById"
-	WarehouseService_Update_FullMethodName  = "/warehouse.WarehouseService/Update"
-	WarehouseService_Delete_FullMethodName  = "/warehouse.WarehouseService/Delete"
-	WarehouseService_GetList_FullMethodName = "/warehouse.WarehouseService/GetList"
+	WarehouseService_Create_FullMethodName              = "/warehouse.WarehouseService/Create"
+	WarehouseService_GetById_FullMethodName             = "/warehouse.WarehouseService/GetById"
+	WarehouseService_Update_FullMethodName              = "/warehouse.WarehouseService/Update"
+	WarehouseService_Delete_FullMethodName              = "/warehouse.WarehouseService/Delete"
+	WarehouseService_GetList_FullMethodName             = "/warehouse.WarehouseService/GetList"
+	WarehouseService_GetResponsibleUsers_FullMethodName = "/warehouse.WarehouseService/GetResponsibleUsers"
 )
 
 // WarehouseServiceClient is the client API for WarehouseService service.
@@ -36,6 +37,7 @@ type WarehouseServiceClient interface {
 	Update(ctx context.Context, in *Warehouse, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Delete(ctx context.Context, in *WarehouseId, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetList(ctx context.Context, in *WarehouseCompanyId, opts ...grpc.CallOption) (*WarehouseList, error)
+	GetResponsibleUsers(ctx context.Context, in *WarehouseCompanyId, opts ...grpc.CallOption) (*UserList, error)
 }
 
 type warehouseServiceClient struct {
@@ -96,6 +98,16 @@ func (c *warehouseServiceClient) GetList(ctx context.Context, in *WarehouseCompa
 	return out, nil
 }
 
+func (c *warehouseServiceClient) GetResponsibleUsers(ctx context.Context, in *WarehouseCompanyId, opts ...grpc.CallOption) (*UserList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserList)
+	err := c.cc.Invoke(ctx, WarehouseService_GetResponsibleUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WarehouseServiceServer is the server API for WarehouseService service.
 // All implementations should embed UnimplementedWarehouseServiceServer
 // for forward compatibility
@@ -105,6 +117,7 @@ type WarehouseServiceServer interface {
 	Update(context.Context, *Warehouse) (*emptypb.Empty, error)
 	Delete(context.Context, *WarehouseId) (*emptypb.Empty, error)
 	GetList(context.Context, *WarehouseCompanyId) (*WarehouseList, error)
+	GetResponsibleUsers(context.Context, *WarehouseCompanyId) (*UserList, error)
 }
 
 // UnimplementedWarehouseServiceServer should be embedded to have forward compatible implementations.
@@ -125,6 +138,9 @@ func (UnimplementedWarehouseServiceServer) Delete(context.Context, *WarehouseId)
 }
 func (UnimplementedWarehouseServiceServer) GetList(context.Context, *WarehouseCompanyId) (*WarehouseList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetList not implemented")
+}
+func (UnimplementedWarehouseServiceServer) GetResponsibleUsers(context.Context, *WarehouseCompanyId) (*UserList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResponsibleUsers not implemented")
 }
 
 // UnsafeWarehouseServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -228,6 +244,24 @@ func _WarehouseService_GetList_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WarehouseService_GetResponsibleUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WarehouseCompanyId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WarehouseServiceServer).GetResponsibleUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WarehouseService_GetResponsibleUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WarehouseServiceServer).GetResponsibleUsers(ctx, req.(*WarehouseCompanyId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WarehouseService_ServiceDesc is the grpc.ServiceDesc for WarehouseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,6 +288,10 @@ var WarehouseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetList",
 			Handler:    _WarehouseService_GetList_Handler,
+		},
+		{
+			MethodName: "GetResponsibleUsers",
+			Handler:    _WarehouseService_GetResponsibleUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
