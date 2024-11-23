@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"github.com/rusystem/crm-warehouse/pkg/domain"
@@ -167,4 +168,46 @@ func (w *WarehouseClient) GetList(ctx context.Context, companyId int64) ([]Wareh
 	}
 
 	return warehouses, nil
+}
+
+func (w *WarehouseClient) GetResponsiblePerson(ctx context.Context, companyId int64) ([]domain.User, error) {
+	resp, err := w.warehouseClient.GetResponsibleUsers(ctx, &warehouse.WarehouseCompanyId{Id: companyId})
+	if err != nil {
+		return nil, err
+	}
+
+	var users []domain.User
+	for _, v := range resp.Users {
+		var lastLogin sql.NullTime
+
+		if !v.LastLogin.AsTime().IsZero() {
+			lastLogin = sql.NullTime{
+				Time:  v.LastLogin.AsTime(),
+				Valid: true,
+			}
+		}
+
+		users = append(users, domain.User{
+			ID:                       v.Id,
+			CompanyID:                v.CompanyId,
+			Username:                 v.Username,
+			Name:                     v.Name,
+			Email:                    v.Email,
+			Phone:                    v.Phone,
+			PasswordHash:             v.PasswordHash,
+			CreatedAt:                v.CreatedAt.AsTime(),
+			UpdatedAt:                v.UpdatedAt.AsTime(),
+			LastLogin:                lastLogin,
+			IsActive:                 v.IsActive,
+			Role:                     v.Role,
+			Language:                 v.Language,
+			Country:                  v.Country,
+			IsApproved:               v.IsApproved,
+			IsSendSystemNotification: v.IsSendSystemNotification,
+			Sections:                 v.Sections,
+			Position:                 v.Position,
+		})
+	}
+
+	return users, nil
 }
