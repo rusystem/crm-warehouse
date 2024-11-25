@@ -142,7 +142,7 @@ func (wh *WarehouseHandler) GetList(ctx context.Context, req *warehouse.Warehous
 	return &warehouse.WarehouseList{Warehouses: resp}, nil
 }
 
-func (wh *WarehouseHandler) GetResponsibleUsers(ctx context.Context, req *warehouse.WarehouseId) (*warehouse.UserList, error) {
+func (wh *WarehouseHandler) GetResponsibleUsers(ctx context.Context, req *warehouse.WarehouseCompanyId) (*warehouse.UserList, error) {
 	u, err := wh.service.Warehouse.GetResponsibleUsers(ctx, req.Id)
 	if err != nil {
 		return nil, err
